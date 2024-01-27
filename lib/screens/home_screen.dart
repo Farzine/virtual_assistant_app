@@ -11,6 +11,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print("object");
+        },
+        //child: Icon(Icons.mic),
+        child: Image.asset(
+          'assets/sound_on.png',
+          height: 30,
+          width: 30,
+        ),
+        backgroundColor: Colors.deepPurple,
+      ),
       backgroundColor: Color.fromARGB(240, 206, 96, 240),
       appBar: AppBar(
         flexibleSpace: Container(
@@ -30,6 +42,35 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         titleSpacing: 5,
         elevation: 2,
+
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 4, top: 4),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: Icon(
+                Icons.chat,
+                size: 40,
+                color: Color.fromARGB(255, 49, 128, 52),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 8, left: 4),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: Icon(
+                Icons.image,
+                size: 40,
+                color: Color.fromARGB(255, 49, 128, 52),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -101,15 +142,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       duration: Duration(milliseconds: 1000),
                       curve: Curves.bounceIn,
                       padding: const EdgeInsets.all(10),
-                      height: 50,
-                      width: 50,
+                      height: 60,
+                      width: 60,
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Icon(
                         Icons.send,
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 49, 128, 52),
+                        size: 35,
                       ),
                     ),
                   ),
