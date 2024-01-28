@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,6 +10,39 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController userInput_controller = TextEditingController();
+
+  final SpeechToText speech = SpeechToText();
+  String recordedText = '';
+  bool isLoading = false;
+
+  void initializeSpeechToText() async {
+    await speech.initialize();
+    setState(() {});
+  }
+
+  void startListining() async {
+    FocusScope.of(context).unfocus();
+    await speech.listen(onResult: (result));
+    setState(() {});
+  }
+
+  void stopListening() async {
+    await speech.stop();
+    setState(() {});
+  }
+
+  void result(SpeechRecognitionResult recognitionResult) {
+    setState(() {
+      recordedText = recognitionResult.recognizedWords;
+      print('result $recordedText');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeSpeechToText();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.deepPurple, Colors.purple],
+              colors: [
+                Colors.purple,
+                Colors.deepPurple,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -60,9 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: EdgeInsets.only(right: 8, left: 4),
             child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, '/profile');
-              },
+              onTap: () {},
               child: Icon(
                 Icons.image,
                 size: 40,
@@ -80,33 +117,43 @@ class _HomeScreenState extends State<HomeScreen> {
               Center(
                 child: InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, '/chat');
+                    speech.isListening ? stopListening() : startListining();
                   },
                   child: Container(
                     height: 200,
                     width: 200,
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 131, 71, 233),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/virtual_assistant.png',
-                          height: 100,
-                          width: 100,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Virtual Assistant',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                    child: speech.isListening
+                        ? Center(
+                            child: LoadingAnimationWidget.beat(
+                                color: speech.isListening
+                                    ? Color.fromARGB(255, 141, 3, 165)
+                                    : isLoading
+                                        ? Colors.green
+                                        : Colors.lightGreen,
+                                size: 150),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/virtual_assistant.png',
+                                height: 100,
+                                width: 150,
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Virtual Assistant',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ),
@@ -136,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 10),
                   InkWell(
                     onTap: () {
-                      print("object");
+                      stopListening();
                     },
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 1000),
